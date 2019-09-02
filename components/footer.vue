@@ -41,6 +41,9 @@
           </p>关注我们
         </el-col>
       </el-row>
+      <div
+        class="copy"
+      >京ICP备08001421号 京公网安备110108007702 Copyright © 2016-2019 博学谷 All Rights Reserved</div>
     </div>
   </div>
 </template>
@@ -58,17 +61,34 @@ export default {};
     height: 329px;
     margin: 0 auto;
     padding-top: 30px;
-      color: #ccc;
+    color: #ccc;
+    h5 {
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: normal;
+    }
     p {
       font-size: 12px;
-        color: #ccc;
+      color: #ccc;
+      line-height: 1.8;
       span {
         color: orange;
       }
     }
-    img{
-      width: 140px;
-      height: 140px;
+    .scan {
+      font-size: 12px;
+      text-align: center;
+      img {
+        width: 140px;
+        height: 140px;
+      }
+    }
+    .copy {
+      border-top: 1px #666 solid;
+      margin-top: 20px;
+      padding: 50px 0;
+      text-align: center;
+      font-size: 12px;
     }
   }
 }
