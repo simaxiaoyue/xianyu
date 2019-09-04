@@ -15,7 +15,7 @@
         <!-- 登录功能组件 -->
         <LoginForm v-if="current == 0" />
         <!-- 注册功能组件 -->
-        <!-- <RegisterForm v-if="current == 1"/> -->
+        <RegisterForm v-if="current == 1"/>
       </div>
     </el-row>
   </div>
@@ -24,7 +24,7 @@
 <script>
 // 导入登录组件
 import LoginForm from "@/components/user/loginForm";
-
+import RegisterForm from "@/components/user/registerForm";
 export default {
   data() {
     return {
@@ -35,7 +35,7 @@ export default {
 
   //注册组件
   components: {
-    LoginForm
+    LoginForm,RegisterForm
   },
 
   methods: {

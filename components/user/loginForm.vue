@@ -38,12 +38,15 @@ export default {
       console.log(this.form);
       this.$refs.form.validate(valid => {
         if (valid) {
+          //登录请求
           this.$axios({
             url: "/accounts/login",
-            method: "POST", // method没有s
+            method: "POST", 
             data: this.form
           }).then(res => {
             console.log(res);
+            //将token存入本地
+            this.$store.commit("user/setUserInfo", res.data);
           });
         } else {
           console.log("验证失败");
