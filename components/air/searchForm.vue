@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   data() {
     return {
@@ -76,6 +77,7 @@ export default {
     // tab切换时触发
     handleSearchTab(index) {
       if (index === 1) {
+        this.$alert("当前不支持往返", "提示");
       }
     },
 
@@ -145,13 +147,28 @@ export default {
     },
 
     // 确认选择日期时触发
-    handleDate(value) {},
+    handleDate(value) {
+      //利用moment进行格式转换
+      this.form.departDate = moment(value).format("YYYY-MM-DD");
+    },
 
     // 触发和目标城市切换时触发
-    handleReverse() {},
+    handleReverse() {
+      const {departCity,departCode,destCity,destCode} =this.form
+      this.form.departCity=destCity
+      this.form.departCode=destCode
+      this.form.destCity=departCity
+      this.form.destCode=departCode
+    },
 
     // 提交表单是触发
-    handleSubmit() {}
+    handleSubmit() {
+      console.log(this.form);
+      this.$router.push({
+        path:'/air/flights',
+        query:this.form
+      });
+    }
   },
   mounted() {}
 };
