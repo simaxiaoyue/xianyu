@@ -87,16 +87,15 @@ export default {
     // 注册
     handleRegSubmit() {
       console.log(this.form);
-      const { checkPassword, ...rest } = this.form;
-      this.$axios({
-        method: "POST",
-        url: "/accounts/register",
-        data: rest
-      }).then(res=>{
-          console.log(res);
-           this.$store.commit("user/setUserInfo", res.data)   
-      })
-      ;
+          const { checkPassword, ...rest } = this.form;
+          this.$axios({
+            method: "POST",
+            url: "/accounts/register",
+            data: rest
+          }).then(res => {
+            console.log(res);
+            this.$store.commit("user/setUserInfo", res.data);
+          });
     }
   }
 };
