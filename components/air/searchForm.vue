@@ -42,6 +42,7 @@
           style="width: 100%;"
           @change="handleDate"
           v-model="form.departDate"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label>
@@ -59,6 +60,11 @@ import moment from "moment";
 export default {
   data() {
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now();
+        }
+      },
       tabs: [
         { icon: "iconfont icondancheng", name: "单程" },
         { icon: "iconfont iconshuangxiang", name: "往返" }
@@ -93,6 +99,12 @@ export default {
         url: "/airs/city",
         params: { name: value }
       }).then(res => {
+        console.log(res);
+        if (res.data.data.length === 0) {
+          cb([]);
+          this.$message.warning("没有找到你所填的城市,请重新输入");
+          return;
+        }
         const { data } = res.data;
         const newData = [];
         data.forEach(e => {
@@ -119,6 +131,11 @@ export default {
         url: "/airs/city",
         params: { name: value }
       }).then(res => {
+        if (res.data.data.length === 0) {
+          cb([]);
+          this.$message.warning("没有找到你所填的城市,请重新输入");
+          return;
+        }
         const { data } = res.data;
         const newData = [];
         data.forEach(e => {
@@ -154,19 +171,23 @@ export default {
 
     // 触发和目标城市切换时触发
     handleReverse() {
-      const {departCity,departCode,destCity,destCode} =this.form
-      this.form.departCity=destCity
-      this.form.departCode=destCode
-      this.form.destCity=departCity
-      this.form.destCode=departCode
+      const { departCity, departCode, destCity, destCode } = this.form;
+      this.form.departCity = destCity;
+      this.form.departCode = destCode;
+      this.form.destCity = departCity;
+      this.form.destCode = departCode;
     },
 
     // 提交表单是触发
     handleSubmit() {
       console.log(this.form);
+      if(this.form.departCode || this.form.destCode===""){
+          this.$message.error("请检查你所填的城市是否正确");        
+        return
+      }
       this.$router.push({
-        path:'/air/flights',
-        query:this.form
+        path: "/air/flights",
+        query: this.form
       });
     }
   },
