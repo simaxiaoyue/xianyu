@@ -181,7 +181,7 @@ export default {
     // 提交表单是触发
     handleSubmit() {
       console.log(this.form);
-      if(this.form.departCode || this.form.destCode===""){
+      if(this.form.departCode==="" || this.form.destCode===""){
           this.$message.error("请检查你所填的城市是否正确");        
         return
       }
