@@ -9,7 +9,17 @@
         <!-- 航班头部布局 -->
         <FlightsListHead></FlightsListHead>
         <!-- 航班信息 -->
-        <FlightsItem v-for="(item, index) in flightsData.flights" :key="index" :data="item"></FlightsItem>
+        <FlightsItem v-for="(item, index) in dataList" :key="index" :data="item"></FlightsItem>
+        <!-- 分页 -->
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageIndex"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
       </div>
 
       <!-- 侧边栏 -->
@@ -27,22 +37,49 @@ export default {
   data() {
     return {
       //航班总数据
-      flightsData:[]
+      flightsData: {},
+      // 当前显示的列表数组
+      dataList: [],
+      pageIndex: 0,
+      pageSize: 5,
+      total: 0
     };
   },
   components: {
     FlightsListHead,
     FlightsItem
   },
-  mounted(){
+  mounted() {
     // console.log(this.$route);
     this.$axios({
-      url:"airs",
-      params:this.$route.query
-    }).then(res=>{
-      // console.log(res.data);
-      this.flightsData=res.data
-    })
+      url: "airs",
+      params: this.$route.query
+    }).then(res => {
+      console.log(res.data);
+      this.flightsData = res.data;
+      //分页的总条数
+      this.total = this.flightsData.flights.length;
+      // 第一页的值
+      this.dataList = this.flightsData.flights.slice(0, this.pageSize);
+    });
+  },
+  methods: {
+    // 每页条数切换时候触发
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      //刷新页面,重新展示第一页
+      this.dataList = this.flightsData.flights.slice(0, this.pageSize);
+    },
+    // 页码切换时候触发
+    handleCurrentChange(val) {
+      // console.log(`当前页: ${val}`);
+      this.pageIndex = val;
+      this.dataList = this.flightsData.flights.slice(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageIndex * this.pageSize
+      );
+    }
   }
 };
 </script>
