@@ -21,6 +21,7 @@
           :fetch-suggestions="queryDepartSearch"
           placeholder="请搜索出发城市"
           @select="handleDepartSelect"
+          @blur="handleDepartBlur"
           class="el-autocomplete"
           v-model="form.departCity"
         ></el-autocomplete>
@@ -30,6 +31,7 @@
           :fetch-suggestions="queryDestSearch"
           placeholder="请搜索到达城市"
           @select="handleDestSelect"
+          @blur="handleDestBlur"
           class="el-autocomplete"
           v-model="form.destCity"
         ></el-autocomplete>
@@ -76,7 +78,9 @@ export default {
         destCity: "",
         destCode: "",
         departDate: ""
-      }
+      },
+      departData: [],
+      destData: []
     };
   },
   methods: {
@@ -86,7 +90,16 @@ export default {
         this.$alert("当前不支持往返", "提示");
       }
     },
-
+    // 出发城市移出输入框默认选中第一个
+    handleDepartBlur() {
+      this.form.departCity = this.departData[0] ? this.departData[0].value : "";
+      this.form.departCode = this.departData[0] ? this.departData[0].sort : "";
+    },
+    // 到达城市移出输入框默认选中第一个
+    handleDestBlur() {
+      this.form.destCity = this.destData[0] ? this.destData[0].value : "";
+      this.form.destCode = this.destData[0] ? this.destData[0].sort : "";
+    },
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     queryDepartSearch(value, cb) {
@@ -111,9 +124,10 @@ export default {
           e.value = e.name.replace("市", "");
           newData.push(e);
         });
+        this.departData = newData;
         // 默认选中第一个
-        this.form.departCity = newData[0].value;
-        this.form.departCode = newData[0].sort;
+        // this.form.departCity = newData[0].value;
+        // this.form.departCode = newData[0].sort;
         //显示到下拉列表中
         cb(newData);
       });
@@ -143,9 +157,10 @@ export default {
           newData.push(e);
         });
         // 默认选中第一个
-        this.form.destCity = newData[0].value;
-        this.form.destCode = newData[0].sort;
+        // this.form.destCity = newData[0].value;
+        // this.form.destCode = newData[0].sort;
         //显示到下拉列表中
+        this.destData = newData;
         cb(newData);
       });
     },
@@ -181,9 +196,9 @@ export default {
     // 提交表单是触发
     handleSubmit() {
       console.log(this.form);
-      if(this.form.departCode==="" || this.form.destCode===""){
-          this.$message.error("请检查你所填的城市是否正确");        
-        return
+      if (this.form.departCode === "" || this.form.destCode === "") {
+        this.$message.error("请检查你所填的城市是否正确");
+        return;
       }
       this.$router.push({
         path: "/air/flights",

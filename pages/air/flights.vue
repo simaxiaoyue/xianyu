@@ -9,8 +9,7 @@
         <!-- 航班头部布局 -->
         <FlightsListHead></FlightsListHead>
         <!-- 航班信息 -->
-        <div></div>
-        <FlightsItem></FlightsItem>
+        <FlightsItem v-for="(item, index) in flightsData.flights" :key="index" :data="item"></FlightsItem>
       </div>
 
       <!-- 侧边栏 -->
@@ -26,11 +25,24 @@ import FlightsListHead from "@/components/air/flightsListHead.vue";
 import FlightsItem from "@/components/air/flightsItem.vue";
 export default {
   data() {
-    return {};
+    return {
+      //航班总数据
+      flightsData:[]
+    };
   },
   components: {
     FlightsListHead,
     FlightsItem
+  },
+  mounted(){
+    // console.log(this.$route);
+    this.$axios({
+      url:"airs",
+      params:this.$route.query
+    }).then(res=>{
+      // console.log(res.data);
+      this.flightsData=res.data
+    })
   }
 };
 </script>
