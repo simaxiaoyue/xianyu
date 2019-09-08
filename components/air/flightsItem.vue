@@ -48,7 +48,10 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.par_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" 
+              size="mini"
+              @click="handleChoose(item.seat_xid)"
+              >选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -89,6 +92,17 @@ export default {
       const hour = Math.floor(dis / 60);
       const min = dis % 60;
       return `${hour}时${min}分`;
+    }
+  },
+  methods:{
+    handleChoose(seat_xid){
+      this.$router.push({
+        path:"/air/order",
+        query:{
+          id:this.data.id,
+          seat_xid
+        }
+      })
     }
   }
 };
