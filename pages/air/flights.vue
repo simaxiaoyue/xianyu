@@ -27,6 +27,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <FlightsAside></FlightsAside>
       </div>
     </el-row>
   </section>
@@ -36,6 +37,7 @@
 import FlightsListHead from "@/components/air/flightsListHead.vue";
 import FlightsItem from "@/components/air/flightsItem.vue";
 import FlightsFilters from "@/components/air/flightsFilters.vue";
+import FlightsAside from "@/components/air/flightsAside.vue";
 export default {
   data() {
     return {
@@ -56,27 +58,36 @@ export default {
       total: 0
     };
   },
+  watch: {
+    $route() {
+      this.getData();
+    }
+  },
   components: {
     FlightsListHead,
     FlightsItem,
-    FlightsFilters
+    FlightsFilters,
+    FlightsAside
   },
   mounted() {
     // console.log(this.$route);
-    this.$axios({
-      url: "airs",
-      params: this.$route.query
-    }).then(res => {
-      console.log(res.data);
-      this.flightsData = res.data;
-      this.cacheFlightsData={...res.data}
-      //分页的总条数
-      this.total = this.flightsData.flights.length;
-      // 第一页的值
-      this.dataList = this.flightsData.flights.slice(0, this.pageSize);
-    });
+    this.getData();
   },
   methods: {
+    getData() {
+      this.$axios({
+        url: "airs",
+        params: this.$route.query
+      }).then(res => {
+        console.log(res.data);
+        this.flightsData = res.data;
+        this.cacheFlightsData = { ...res.data };
+        //分页的总条数
+        this.total = this.flightsData.flights.length;
+        // 第一页的值
+        this.dataList = this.flightsData.flights.slice(0, this.pageSize);
+      });
+    },
     setDataList(arr) {
       this.flightsData.flights = arr;
       this.pageIndex = 1;

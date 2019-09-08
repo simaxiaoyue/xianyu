@@ -200,6 +200,11 @@ export default {
         this.$message.error("请检查你所填的城市是否正确");
         return;
       }
+      //取出本地存储
+      const arr = JSON.parse(localStorage.getItem("airs")) || [];
+      //更新本地存储
+      arr.push(this.form);
+      localStorage.setItem("airs", JSON.stringify(arr));
       this.$router.push({
         path: "/air/flights",
         query: this.form
