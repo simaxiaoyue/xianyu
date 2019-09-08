@@ -4,10 +4,12 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+        <div>
+          <FlightsFilters :data="cacheFlightsData" @setDataList="setDataList"></FlightsFilters>
+        </div>
 
         <!-- 航班头部布局 -->
-        <FlightsListHead></FlightsListHead>
+        <FlightsListHead :data="flightsData"></FlightsListHead>
         <!-- 航班信息 -->
         <FlightsItem v-for="(item, index) in dataList" :key="index" :data="item"></FlightsItem>
         <!-- 分页 -->
@@ -33,11 +35,20 @@
 <script>
 import FlightsListHead from "@/components/air/flightsListHead.vue";
 import FlightsItem from "@/components/air/flightsItem.vue";
+import FlightsFilters from "@/components/air/flightsFilters.vue";
 export default {
   data() {
     return {
       //航班总数据
-      flightsData: {},
+      flightsData: {
+        info: {},
+        options: {}
+      },
+      //缓存航班总数据
+      cacheFlightsData: {
+        info: {},
+        options: {}
+      },
       // 当前显示的列表数组
       dataList: [],
       pageIndex: 0,
@@ -47,7 +58,8 @@ export default {
   },
   components: {
     FlightsListHead,
-    FlightsItem
+    FlightsItem,
+    FlightsFilters
   },
   mounted() {
     // console.log(this.$route);
@@ -57,6 +69,7 @@ export default {
     }).then(res => {
       console.log(res.data);
       this.flightsData = res.data;
+      this.cacheFlightsData={...res.data}
       //分页的总条数
       this.total = this.flightsData.flights.length;
       // 第一页的值
@@ -64,6 +77,17 @@ export default {
     });
   },
   methods: {
+    setDataList(arr) {
+      this.flightsData.flights = arr;
+      this.pageIndex = 1;
+      // 按照数学公式切换dataList的值
+      this.dataList = this.flightsData.flights.slice(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageIndex * this.pageSize
+      );
+      // 修改总条数
+      this.total = arr.length;
+    },
     // 每页条数切换时候触发
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
