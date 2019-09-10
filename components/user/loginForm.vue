@@ -41,16 +41,18 @@ export default {
           //登录请求
           this.$axios({
             url: "/accounts/login",
-            method: "POST", 
+            method: "POST",
             data: this.form
           }).then(res => {
             console.log(res);
             //将token存入本地
             this.$store.commit("user/setUserInfo", res.data);
-            this.$message.success('登录成功')
-            this.$router.push({
-              path:"/"
-            })
+            // this.$message.success('登录成功')
+            // this.$router.push({
+            //   path:"/"
+            // })
+            // 返回上一页
+            this.$router.back();
           });
         } else {
           console.log("验证失败");
