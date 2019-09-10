@@ -29,6 +29,15 @@
         <div class="list">
           <PostList v-for="(item,index) in postsList" :key="index" :data="item"></PostList>
         </div>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageIndex"
+          :page-sizes="[1, 2, 3, 4]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
       </div>
     </el-row>
   </div>
@@ -41,19 +50,38 @@ export default {
   data() {
     return {
       searchCity: "",
-       postsList: []
-    }
+      postsList: [],
+      pageIndex: 1,
+      pageSize: 1,
+      total: 0
+    };
   },
-  components:{
+  components: {
     PostList
   },
   mounted() {
-    this.$axios({
-      url: "posts"
-    }).then(res => {
-      console.log(res.data.data);
-      this.postsList = res.data.data;
-    });
+    this.getData();
+  },
+  methods: {
+    getData() {
+      this.$axios({
+        url: "posts"
+      }).then(res => {
+        console.log(res.data.data);
+        this.postsList = res.data.data;
+        this.total = this.postsList.length;
+      });
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.getData();
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pageIndex = val;
+      this.getData();
+    }
   }
 };
 </script>
