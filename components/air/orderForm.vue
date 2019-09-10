@@ -1,11 +1,11 @@
 <template>
   <div class="main">
     <div class="air-column">
-      <h2>剩机人</h2>
+      <h2>乘机人</h2>
       <el-form class="member-info">
-        <div class="member-info-item">
+        <div class="member-info-item" v-for="(item, index) in users" :key="index">
           <el-form-item label="乘机人类型">
-            <el-input placeholder="姓名" class="input-with-select" v-model="users.username">
+            <el-input placeholder="姓名" class="input-with-select" v-model="users[index].username">
               <el-select slot="prepend" value="1" placeholder="请选择">
                 <el-option label="成人" value="1"></el-option>
               </el-select>
@@ -13,14 +13,14 @@
           </el-form-item>
 
           <el-form-item label="证件类型">
-            <el-input placeholder="证件号码" class="input-with-select"  v-model="users.id">
+            <el-input placeholder="证件号码" class="input-with-select" v-model="users[index].id">
               <el-select slot="prepend" value="1" placeholder="请选择">
                 <el-option label="身份证" value="1" :checked="true"></el-option>
               </el-select>
             </el-input>
           </el-form-item>
 
-          <span class="delete-user" @click="handleDeleteUser()">-</span>
+          <span class="delete-user" @click="handleDeleteUser(index)">-</span>
         </div>
       </el-form>
 
@@ -31,7 +31,11 @@
       <h2>保险</h2>
       <div>
         <div class="insurance-item" v-for="(item,index) in infoData.insurances" :key="index">
-          <el-checkbox :label="`${item.type}:￥${item.price}/份×1  最高赔付${item.compensation}`" border></el-checkbox>
+          <el-checkbox
+            :label="`${item.type}:￥${item.price}/份×1  最高赔付${item.compensation}`"
+            border
+            @change="handleChange(item.id)"
+          ></el-checkbox>
         </div>
       </div>
     </div>
@@ -77,9 +81,9 @@ export default {
       contactPhone: "",
       invoice: false,
       seat_xid: "",
-      air: 0,
-      captcha: 0,
-      infoData:{}
+      air: "",
+      captcha: "",
+      infoData: {}
     };
   },
   mounted() {
@@ -97,17 +101,70 @@ export default {
     });
   },
   methods: {
+    //获得选中保险的id
+    handleChange(id) {
+      const index = this.insurances.indexOf(id);
+      if (index > -1) {
+        this.insurances.splice(index, 1);
+      } else {
+        this.insurances.push(id);
+      }
+      console.log(this.insurances);
+    },
     // 添加乘机人
-    handleAddUsers() {},
+    handleAddUsers() {
+      this.users.push({
+        username: "",
+        id: ""
+      });
+    },
 
     // 移除乘机人
-    handleDeleteUse() {},
+    handleDeleteUser(index) {
+      this.users.splice(index, 1);
+    },
 
     // 发送手机验证码
-    handleSendCaptcha() {},
+    handleSendCaptcha() {
+      if (!this.contactPhone) {
+        this.$message.error("请输入手机号码");
+        return;
+      }
+      this.$axios({
+        method: "POST",
+        url: "/captchas",
+        data: {
+          tel: this.contactPhone
+        }
+      }).then(res => {
+        console.log(res);
+        const { code } = res.data;
+        this.$alert(`模拟手机验证码是：${code}`, "提示");
+      });
+    },
 
     // 提交订单
-    handleSubmit() {}
+    handleSubmit() {
+        const { id, seat_xid } = this.$route.query
+      const data = {
+        users: this.users,
+        insurances: this.insurances,
+        contactName: this.contactName,
+        contactPhone: this.contactPhone,
+        invoice: this.invoice,
+        seat_xid,
+        air: id,
+        captcha: this.captcha,
+      }
+      this.$axios({
+          url:"/airorders",
+          method:"POST",
+          data,
+          headers:{ Authorization: `Bearer ${this.$store.state.user.userInfo.token}`}
+      }).then(res=>{
+          console.log(res);
+      })
+    }
   }
 };
 </script>

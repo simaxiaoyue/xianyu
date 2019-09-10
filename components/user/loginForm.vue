@@ -47,6 +47,10 @@ export default {
             console.log(res);
             //将token存入本地
             this.$store.commit("user/setUserInfo", res.data);
+            this.$message.success('登录成功')
+            this.$router.push({
+              path:"/"
+            })
           });
         } else {
           console.log("验证失败");
