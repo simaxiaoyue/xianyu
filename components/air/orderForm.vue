@@ -63,6 +63,7 @@
         <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
       </div>
     </div>
+    <span v-show="false">{{allPrice}}</span>
   </div>
 </template>
 
@@ -86,6 +87,26 @@ export default {
       infoData: {}
     };
   },
+  computed: {
+    allPrice() {
+      // 如果请求未完成，暂时不需要计算，返回0；
+      if (!this.infoData.seat_infos) {
+        return 0;
+      }
+      let price = 0;
+      // 机票单价，取座位信息的第一个价格
+      price += this.infoData.seat_infos.org_settle_price;
+      // 燃油费
+      price += this.infoData.airport_tax_audlet;
+
+      // 保险数据
+      price += 30 * this.insurances.length;
+      price *= this.users.length;
+      // 把值存到store
+      this.$store.commit("air/setAllPirce", price);
+      return price;
+    }
+  },
   mounted() {
     console.log(this.$route);
 
@@ -98,6 +119,7 @@ export default {
     }).then(res => {
       console.log(res.data);
       this.infoData = res.data;
+      this.$store.commit("air/setInfoData", this.infoData);
     });
   },
   methods: {
@@ -145,7 +167,7 @@ export default {
 
     // 提交订单
     handleSubmit() {
-        const { id, seat_xid } = this.$route.query
+      const { id, seat_xid } = this.$route.query;
       const data = {
         users: this.users,
         insurances: this.insurances,
@@ -154,16 +176,18 @@ export default {
         invoice: this.invoice,
         seat_xid,
         air: id,
-        captcha: this.captcha,
-      }
+        captcha: this.captcha
+      };
       this.$axios({
-          url:"/airorders",
-          method:"POST",
-          data,
-          headers:{ Authorization: `Bearer ${this.$store.state.user.userInfo.token}`}
-      }).then(res=>{
-          console.log(res);
-      })
+        url: "/airorders",
+        method: "POST",
+        data,
+        headers: {
+          Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+        }
+      }).then(res => {
+        console.log(res);
+      });
     }
   }
 };
