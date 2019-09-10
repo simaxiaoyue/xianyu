@@ -16,12 +16,26 @@
     <!-- 文章信息 -->
     <div class="post_info">
       <el-row type="flex" justify="space-between">
-        <span></span>
-        <div class="post_user">
-          <img src alt />
-          <a href></a>
+        <div class="post_info_left">
+          <el-row type="flex" justify="space-between">
+            <span>
+              <i class="el-icon-location-outline"></i>
+              {{data.cityName}}
+            </span>
+            <div class="post_user">
+              <el-row type="flex" justify="space-between">
+                by
+                <img :src="`${$axios.defaults.baseURL}`+data.account.defaultAvatar" alt class />
+                <a href>{{data.account.nickname}}</a>
+              </el-row>
+            </div>
+            <span>
+              <i class="el-icon-view"></i>
+              {{data.watch}}
+            </span>
+          </el-row>
         </div>
-        <span></span>
+
         <span></span>
       </el-row>
     </div>
@@ -60,6 +74,13 @@ export default {
     color: #666;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .post_info img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 100px;
+    margin: 5px;
   }
 }
 </style>
