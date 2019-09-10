@@ -1,14 +1,118 @@
 <template>
-  <div>攻略</div>
-  
+  <div class="container">
+    <el-row type="flex" justify="space-between">
+      <!-- 侧边推荐栏 -->
+      <div class="aside"></div>
+      <div class="main">
+        <!-- 搜索栏 -->
+        <div class="search">
+          <el-input
+            placeholder="请输入想去的地方，比如：'广州'"
+            suffix-icon="el-icon-search"
+            v-model="searchCity"
+            class="search_box"
+          ></el-input>
+          <div class="searh_recom">
+            <span>推荐:</span>
+            <a href>广州</a>
+            <a href>上海</a>
+            <a href>北京</a>
+          </div>
+        </div>
+        <div class="add_post">
+          <el-row type="flex" justify="space-between">
+            <h4>推荐攻略</h4>
+            <el-button type="primary" i con="el-icon-edit">写游记</el-button>
+          </el-row>
+        </div>
+        <!-- 文章列表 -->
+        <div class="list">
+          <PostList v-for="(item,index) in postsList" :key="index" :data="item"></PostList>
+        </div>
+      </div>
+    </el-row>
+  </div>
 </template>
 
 <script>
-export default {
+import PostList from "@/components/post/postList.vue";
 
-}
+export default {
+  data() {
+    return {
+      searchCity: "",
+       postsList: []
+    }
+  },
+  components:{
+    PostList
+  },
+  mounted() {
+    this.$axios({
+      url: "posts"
+    }).then(res => {
+      console.log(res.data.data);
+      this.postsList = res.data.data;
+    });
+  }
+};
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.container {
+  width: 1000px;
+  margin: 20px auto;
+  .aside {
+    width: 30%;
+  }
+  .main {
+    width: 70%;
+    .search {
+      .search_box {
+        /deep/ .el-input__inner {
+          width: 100%;
+          // box-sizing: border-box;
+          height: 40px;
+          line-height: 40px;
+          border: 3px solid orange;
+        }
+        /deep/ .el-input__icon {
+          font-size: 24px;
+          color: orange;
+          font-weight: 700;
+          margin-right: 10px;
+        }
+      }
+      .searh_recom {
+        padding: 10px 0;
+        font-size: 12px;
+        color: #666;
+        a {
+          margin-left: 5px;
+          &:hover {
+            color: orange;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+    .add_post {
+      height: 40px;
+      line-height: 40px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      /deep/.el-button--primary {
+        height: 40px;
+      }
+      h4 {
+        height: 38px;
+        font-weight: 400;
+        font-size: 18px;
+        color: orange;
+        padding-bottom: 10px;
+        border-bottom: 2px solid orange;
+      }
+    }
+  }
+}
 </style>
