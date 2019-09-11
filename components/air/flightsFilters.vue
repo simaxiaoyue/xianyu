@@ -68,7 +68,13 @@ export default {
         { label: "大", value: "L" },
         { label: "中", value: "M" },
         { label: "小", value: "S" }
-      ]
+      ],
+      // 用于过滤条件的对象
+      filters: {
+        airport: { key: "org_airport_name", value: "" },
+        company: { key: "airline_name", value: "" },
+        airSize: { key: "plane_size", value: "" }
+      }
     };
   },
   props: {
@@ -78,16 +84,40 @@ export default {
     }
   },
   methods: {
-    // 选择机场时候触发
-    handleAirport(value) {
-      const arr = this.data.flights.filter(v => {
-        return v.org_airport_name === value;
+    handleFilters() {
+      const arr = [];
+      //遍历每一条航班信息
+      this.data.flights.forEach(item => {
+        //假设每一天航班都符合过滤条件
+        let valid = true;
+        // [airport,company,airSize]
+        Object.keys(this.filters).forEach(v => {
+          if (!this.filters[v].value) {
+            return;
+          }
+          if (item[this.filters[v].key] !== this.filters[v].value) {
+            valid = false;
+          }
+        });
+        if (valid) {
+          arr.push(item);
+        }
       });
       this.$emit("setDataList", arr);
+    },
+    // 选择机场时候触发
+    handleAirport(value) {
+      // const arr = this.data.flights.filter(v => {
+      //   return v.org_airport_name === value;
+      // });
+      // this.$emit("setDataList", arr);
+      this.filters.airport.value = value;
+      this.handleFilters();
     },
 
     // 选择出发时间时候触发
     handleFlightTimes(value) {
+      console.log(value);
       const [from, to] = value.split(",");
       const arr = this.data.flights.filter(v => {
         // console.log(v);
@@ -99,26 +129,30 @@ export default {
 
     // 选择航空公司时候触发
     handleCompany(value) {
-      const arr = this.data.flights.filter(v => {
-        return v.airline_name === value;
-      });
-      this.$emit("setDataList", arr);
+      // const arr = this.data.flights.filter(v => {
+      //   return v.airline_name === value;
+      // });
+      // this.$emit("setDataList", arr);
+      this.filters.company.value = value;
+      this.handleFilters();
     },
 
     // 选择机型时候触发
     handleAirSize(value) {
-      const arr = this.data.flights.filter(v => {
-        return v.plane_size === value;
-      });
-      this.$emit("setDataList", arr);
+      // const arr = this.data.flights.filter(v => {
+      //   return v.plane_size === value;
+      // });
+      // this.$emit("setDataList", arr);
+      this.filters.airSize.value = value;
+      this.handleFilters();
     },
 
     // 撤销条件时候触发
     handleFiltersCancel() {
-      this.airport= ""; 
-      this.flightTimes= ""; 
-      this.company= ""; 
-      this.airSize= "";
+      this.airport = "";
+      this.flightTimes = "";
+      this.company = "";
+      this.airSize = "";
       this.$emit("setDataList", this.data.flights);
     }
   }
