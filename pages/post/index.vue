@@ -8,11 +8,12 @@
         <div class="search">
           <el-input
             placeholder="请输入想去的地方，比如：'广州'"
-            suffix-icon="el-icon-search"
             v-model="searchCity"
             class="search_box"
             @keyup.enter.native="searchData(searchCity)"
-          ></el-input>
+          >
+          </el-input>
+          <i class="el-icon-search" @click="searchData(searchCity)" ></i>
           <div class="searh_recom">
             <span>推荐:</span>
             <span @click="searchData('广州')">广州</span>
@@ -120,6 +121,7 @@ export default {
   .main {
     width: 70%;
     .search {
+            position: relative;
       .search_box {
         /deep/ .el-input__inner {
           width: 100%;
@@ -128,13 +130,16 @@ export default {
           line-height: 40px;
           border: 3px solid orange;
         }
-        /deep/ .el-input__icon {
-          font-size: 24px;
-          color: orange;
-          font-weight: 700;
-          margin-right: 10px;
-        }
       }
+          /deep/ .el-icon-search {
+            position: absolute;
+            right: 0;
+            top: 7px;
+            font-size: 24px;
+            color: orange;
+            font-weight: 700;
+            margin-right: 10px;
+          }
       .searh_recom {
         padding: 10px 0;
         font-size: 12px;

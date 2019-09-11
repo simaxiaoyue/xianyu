@@ -26,10 +26,16 @@
 <script>
 import QRCode from "qrcode";
 export default {
-  data(){
-    return{
-
-    }
+  data() {
+    return {
+      order: {}
+    };
+  },
+  // 组件卸载时候触发
+  destroyed() {
+    // 清除定时器
+    clearInterval(this.timer);
+    this.timer = null;
   },
   mounted() {
     setTimeout(() => {
@@ -41,6 +47,8 @@ export default {
         }
       }).then(res => {
         console.log(res);
+        //存储订单信息
+        this.order = res.data;
         // 获取到canvas节点元素
         const canvas = document.getElementById("qrcode-stage");
         // 要生二维码的连接
@@ -48,11 +56,44 @@ export default {
         QRCode.toCanvas(canvas, code_url, {
           width: 200
         });
+        //每隔3秒检测一次订单是否支付
+        this.timer = setInterval(() => {
+          this.checkPay();
+        }, 3000);
       });
     }, 10);
   },
-  methods(){
-    
+
+  methods: {
+    checkPay() {
+      this.$axios({
+        url: "/airorders/checkpay",
+        method: "POST",
+        data: {
+          id: this.$route.query.id,
+          noce_str: this.order.price,
+          out_trade_no: this.order.orderNo
+        },
+        headers: {
+          Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+        }
+      }).then(res => {
+        console.log(res);
+        const { statusTxt } = res.data;
+        if (statusTxt === "支付完成") {
+          //停止定时器
+          clearInterval(this.timer);
+          this.timer = null;
+          // 提示用户支付成功
+          this.$alert("支付成功", "提示");
+          setTimeout(()=>{
+            this.$router.push({
+              path:"/"
+            })
+          },5000)
+        }
+      });
+    }
   }
 };
 </script>
