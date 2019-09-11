@@ -27,7 +27,7 @@
         </div>
         <!-- 文章列表 -->
         <div class="list">
-          <PostList v-for="(item,index) in postsList" :key="index" :data="item"></PostList>
+          <PostList v-for="(item,index) in dataList" :key="index" :data="item"></PostList>
         </div>
         <el-pagination
           @size-change="handleSizeChange"
@@ -50,7 +50,10 @@ export default {
   data() {
     return {
       searchCity: "",
+      //文章总数据
       postsList: [],
+      // 当前显示的列表数组
+      dataList: [],
       pageIndex: 1,
       pageSize: 1,
       total: 0
@@ -70,17 +73,22 @@ export default {
         console.log(res.data.data);
         this.postsList = res.data.data;
         this.total = this.postsList.length;
+        this.dataList = this.postsList.slice(0, this.pageSize);
       });
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pageSize = val;
-      this.getData();
+      this.dataList = this.postsList.slice(0, this.pageSize);
+      this.pageIndex = 1;
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.pageIndex = val;
-      this.getData();
+      this.dataList = this.postsList.slice(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageIndex * this.pageSize
+      );
     }
   }
 };
