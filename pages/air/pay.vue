@@ -26,6 +26,11 @@
 <script>
 import QRCode from "qrcode";
 export default {
+  data(){
+    return{
+
+    }
+  },
   mounted() {
     setTimeout(() => {
       // 请求订单详情
@@ -45,6 +50,9 @@ export default {
         });
       });
     }, 10);
+  },
+  methods(){
+    
   }
 };
 </script>

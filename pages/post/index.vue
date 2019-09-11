@@ -11,12 +11,13 @@
             suffix-icon="el-icon-search"
             v-model="searchCity"
             class="search_box"
+            @keyup.enter.native="searchData(searchCity)"
           ></el-input>
           <div class="searh_recom">
             <span>推荐:</span>
-            <a href>广州</a>
-            <a href>上海</a>
-            <a href>北京</a>
+            <span @click="searchData('广州')">广州</span>
+            <span @click="searchData('上海')">上海</span>
+            <span @click="searchData('北京')">北京</span>
           </div>
         </div>
         <div class="add_post">
@@ -55,7 +56,7 @@ export default {
       // 当前显示的列表数组
       dataList: [],
       pageIndex: 1,
-      pageSize: 1,
+      pageSize: 2,
       total: 0
     };
   },
@@ -66,6 +67,17 @@ export default {
     this.getData();
   },
   methods: {
+    searchData(searchCity) {
+      let arr = [];
+      this.postsList.forEach(e => {
+        if (e.cityName.indexOf(searchCity) !== -1) {
+          arr.push(e);
+        }
+      });
+      this.searchCity=searchCity
+      this.dataList = arr;
+      this.total = this.dataList.length;
+    },
     getData() {
       this.$axios({
         url: "posts"
@@ -79,16 +91,20 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pageSize = val;
-      this.dataList = this.postsList.slice(0, this.pageSize);
       this.pageIndex = 1;
+      if (!this.searchCity) {
+        this.dataList = this.postsList.slice(0, this.pageSize);
+      }
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.pageIndex = val;
-      this.dataList = this.postsList.slice(
-        (this.pageIndex - 1) * this.pageSize,
-        this.pageIndex * this.pageSize
-      );
+      if (!this.searchCity) {
+        this.dataList = this.postsList.slice(
+          (this.pageIndex - 1) * this.pageSize,
+          this.pageIndex * this.pageSize
+        );
+      }
     }
   }
 };
@@ -123,7 +139,8 @@ export default {
         padding: 10px 0;
         font-size: 12px;
         color: #666;
-        a {
+        span {
+          cursor: pointer;
           margin-left: 5px;
           &:hover {
             color: orange;
