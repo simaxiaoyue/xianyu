@@ -117,7 +117,6 @@ export default {
 
     // 选择出发时间时候触发
     handleFlightTimes(value) {
-      console.log(value);
       const [from, to] = value.split(",");
       const arr = this.data.flights.filter(v => {
         // console.log(v);
