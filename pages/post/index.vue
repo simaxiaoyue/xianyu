@@ -2,7 +2,9 @@
   <div class="container">
     <el-row type="flex" justify="space-between">
       <!-- 侧边推荐栏 -->
-      <div class="aside"></div>
+      <div class="aside">
+        <PostMenu></PostMenu>
+      </div>
       <div class="main">
         <!-- 搜索栏 -->
         <div class="search">
@@ -11,9 +13,8 @@
             v-model="searchCity"
             class="search_box"
             @keyup.enter.native="searchData(searchCity)"
-          >
-          </el-input>
-          <i class="el-icon-search" @click="searchData(searchCity)" ></i>
+          ></el-input>
+          <i class="el-icon-search" @click="searchData(searchCity)"></i>
           <div class="searh_recom">
             <span>推荐:</span>
             <span @click="searchData('广州')">广州</span>
@@ -21,6 +22,7 @@
             <span @click="searchData('北京')">北京</span>
           </div>
         </div>
+        <!-- 推荐攻略 -->
         <div class="add_post">
           <el-row type="flex" justify="space-between">
             <h4>推荐攻略</h4>
@@ -31,6 +33,7 @@
         <div class="list">
           <PostList v-for="(item,index) in dataList" :key="index" :data="item"></PostList>
         </div>
+        <!-- 分页 -->
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -47,7 +50,7 @@
 
 <script>
 import PostList from "@/components/post/postList.vue";
-
+import PostMenu from "@/components/post/postMenu.vue";
 export default {
   data() {
     return {
@@ -62,7 +65,13 @@ export default {
     };
   },
   components: {
-    PostList
+    PostList,
+    PostMenu
+  },
+  watch:{
+$route(){
+    this.getData();
+}
   },
   mounted() {
     this.getData();
@@ -75,11 +84,22 @@ export default {
           arr.push(e);
         }
       });
-      this.searchCity=searchCity
+      this.searchCity = searchCity;
       this.dataList = arr;
       this.total = this.dataList.length;
     },
     getData() {
+      if (this.$route.query) {
+        this.$axios({
+          url: "posts",
+          params:this.$route.query
+        }).then(res => {
+          console.log(res.data.data);
+          this.postsList = res.data.data;
+          this.total = this.postsList.length;
+          this.dataList = this.postsList.slice(0, this.pageSize);
+        });
+      }
       this.$axios({
         url: "posts"
       }).then(res => {
@@ -121,7 +141,7 @@ export default {
   .main {
     width: 70%;
     .search {
-            position: relative;
+      position: relative;
       .search_box {
         /deep/ .el-input__inner {
           width: 100%;
@@ -131,15 +151,15 @@ export default {
           border: 3px solid orange;
         }
       }
-          /deep/ .el-icon-search {
-            position: absolute;
-            right: 0;
-            top: 7px;
-            font-size: 24px;
-            color: orange;
-            font-weight: 700;
-            margin-right: 10px;
-          }
+      /deep/ .el-icon-search {
+        position: absolute;
+        right: 0;
+        top: 7px;
+        font-size: 24px;
+        color: orange;
+        font-weight: 700;
+        margin-right: 10px;
+      }
       .searh_recom {
         padding: 10px 0;
         font-size: 12px;
